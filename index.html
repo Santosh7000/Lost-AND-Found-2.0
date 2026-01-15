@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconnect - Lost & Found</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header id="navbar">
+        <div class="logo">Reconnect.</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#" onclick="navTo('home')">Home</a></li>
+                <li><a href="#about" onclick="navTo('home')">About</a></li>
+                <li><a href="#services" onclick="navTo('home')">Services</a></li>
+                <li><a href="#contact" onclick="navTo('home')">Contact</a></li>
+                <li id="auth-link"><a href="#" class="btn-primary" onclick="navTo('auth')">Get Started</a></li>
+                <li id="logout-link" style="display: none;"><a href="#" class="btn-secondary"
+                        onclick="logout()">Logout</a></li>
+            </ul>
+            <div class="hamburger" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <div id="toast" class="toast">Action Successful</div>
+
+    <main>
+
+        <div id="landing-view">
+            <section id="home" class="hero">
+                <div class="hero-content fade-in">
+                    <h1>Reconnect Lost Items <br>With Their Owners</h1>
+                    <p>The fastest way to report lost valuables and help others find theirs.</p>
+                    <div class="hero-buttons">
+                        <button class="btn-primary" onclick="navTo('auth')">Get Started</button>
+                        <button class="btn-outline" onclick="checkAuthAndRedirect('found')">I Found Something</button>
+                    </div>
+                </div>
+                <div class="hero-graphic"></div>
+            </section>
+
+            <section id="about" class="section">
+                <h2 class="section-title">About Us</h2>
+                <div class="card-grid">
+                    <div class="card scroll-hidden">
+                        <h3>Community Driven</h3>
+                        <p>We rely on honest people to reconnect items.</p>
+                    </div>
+                    <div class="card scroll-hidden">
+                        <h3>Fast Matching</h3>
+                        <p>Our algorithm matches descriptions instantly.</p>
+                    </div>
+                    <div class="card scroll-hidden">
+                        <h3>Secure</h3>
+                        <p>Your contact details are protected.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="services" class="section bg-light">
+                <h2 class="section-title">Our Services</h2>
+                <div class="card-grid">
+                    <div class="card hover-card scroll-hidden">
+                        <h3>Lost Item Matching</h3>
+                        <p>Upload a photo and let us search our database.</p>
+                    </div>
+                    <div class="card hover-card scroll-hidden">
+                        <h3>Found Reporting</h3>
+                        <p>Found something? Snap a pic and list it in seconds.</p>
+                    </div>
+                    <div class="card hover-card scroll-hidden">
+                        <h3>Secure Accounts</h3>
+                        <p>Manage your posts and messages securely.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="section">
+                <h2 class="section-title">Contact Us</h2>
+                <form class="form-box scroll-hidden" onsubmit="handleContact(event)">
+                    <input type="text" placeholder="Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <textarea placeholder="Message" rows="4" required></textarea>
+                    <button type="submit" class="btn-primary">Send Message</button>
+                </form>
+            </section>
+        </div>
+
+        <section id="auth-view" class="section hidden">
+            <div class="auth-container">
+                <div id="login-form" class="form-box">
+                    <h2>Login</h2>
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-pass" placeholder="Password" required>
+                    <button class="btn-primary" onclick="login()">Login</button>
+                    <p class="switch-text">New here? <span onclick="toggleAuth('register')">Register</span></p>
+                </div>
+                <div id="register-form" class="form-box hidden">
+                    <h2>Register</h2>
+                    <input type="text" id="reg-name" placeholder="Full Name" required>
+                    <input type="email" id="reg-email" placeholder="Email" required>
+                    <input type="password" id="reg-pass" placeholder="Password (min 6 chars)" required>
+                    <button class="btn-primary" onclick="register()">Register</button>
+                    <p class="switch-text">Already have an account? <span onclick="toggleAuth('login')">Login</span></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard-view" class="hidden">
+            <div class="dashboard-header">
+                <h2>Welcome, <span id="user-name-display">User</span></h2>
+                <div class="dash-tabs">
+                    <button class="tab-btn active" onclick="switchDashTab('lost')">Report Lost Item</button>
+                    <button class="tab-btn" onclick="switchDashTab('found')">Report Found Item</button>
+                    <button class="tab-btn" onclick="switchDashTab('feed')">Recent Found Items</button>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div id="lost-tab" class="dash-panel">
+                    <h3>Report a Lost Item</h3>
+                    <form onsubmit="handleItemSubmit(event, 'lost')" class="form-box">
+                        <input type="text" name="item-name" placeholder="Item Name (e.g., Red Wallet)" required>
+                        <input type="text" name="description" placeholder="Description (Color, Brand, ID numbers)"
+                            required>
+                        <input type="text" name="location" placeholder="Where was it lost?" required>
+                        <input type="date" name="date" required>
+                        <label>Upload Image (Optional)</label>
+                        <input type="file" accept="image/*" id="lost-file-input">
+                        <button type="submit" class="btn-primary">Submit Report & Search</button>
+                    </form>
+                    <div id="match-results" class="results-grid"></div>
+                </div>
+
+                <div id="found-tab" class="dash-panel hidden">
+                    <h3>Report a Found Item</h3>
+                    <form onsubmit="handleItemSubmit(event, 'found')" class="form-box">
+                        <input type="text" name="item-name" placeholder="Item Name" required>
+                        <input type="text" name="description" placeholder="Description" required>
+                        <input type="text" name="location" placeholder="Where did you find it?" required>
+                        <input type="text" name="contact" placeholder="Contact Info (Phone/Email)" required>
+                        <label>Take Photo / Upload</label>
+                        <input type="file" accept="image/*" capture="environment" id="found-file-input" required>
+                        <button type="submit" class="btn-primary">Post Found Item</button>
+                    </form>
+                </div>
+
+                <div id="feed-tab" class="dash-panel hidden">
+                    <h3>Recently Found Items</h3>
+                    <div id="found-items-grid" class="card-grid">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="admin-view" class="hidden admin-layout">
+
+            <aside class="sidebar">
+                <div class="sidebar-icon active" onclick="filterAdminView('all')" title="All Items">
+                    <div class="icon-box">📂</div>
+                </div>
+                <div class="sidebar-icon" onclick="filterAdminView('lost')" title="Lost Items">
+                    <div class="icon-box" style="color: #ef4444;">🔴</div>
+                </div>
+                <div class="sidebar-icon" onclick="filterAdminView('found')" title="Found Items">
+                    <div class="icon-box" style="color: #22c55e;">🟢</div>
+                </div>
+                <div class="sidebar-spacer"></div>
+                <div class="sidebar-icon" onclick="logout()" title="Logout">
+                    <div class="icon-box">🚪</div>
+                </div>
+            </aside>
+
+            <div class="main-feed">
+                <header class="feed-header">
+                    <div>
+                        <h1>Dashboard</h1>
+                        <p class="subtitle">Overview of reported items</p>
+                    </div>
+                    <div class="stats-pill">
+                        <span>Total Items: </span>
+                        <b id="total-count">0</b>
+                    </div>
+                </header>
+
+                <div id="admin-cards-container" class="cards-container">
+                </div>
+            </div>
+
+            <div id="details-panel" class="details-panel">
+                <div class="empty-state">
+                    <p>Select an item to view details</p>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="last-part">
+                <p>&copy; 2026 Reconnect. All rights reserved.</p>
+                <div class="socials">
+                    <span>FB</span> <span>TW</span> <span>IG</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
